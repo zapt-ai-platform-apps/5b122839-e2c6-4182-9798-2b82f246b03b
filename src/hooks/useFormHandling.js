@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { createEvent } from '../supabaseClient';
 import * as Sentry from '@sentry/browser';
+import { generateDisputeLetter } from '../services/aiService';
+import { saveLetter } from '../services/letterService';
 
 export function useFormHandling() {
   const [formData, setFormData] = useState({
@@ -20,43 +21,19 @@ export function useFormHandling() {
     setLoading(true);
     
     try {
-      // Generate letter content
-      const gptResponse = await createEvent('chatgpt_request', {
-        prompt: `Generate a parking dispute letter using this data: ${JSON.stringify(formData)}. 
-          Structure response as: { 
-            "letter": "full letter text in professional legal language", 
-            "summary": "bullet point summary of key arguments" 
-          }`,
-        response_type: 'json'
+      const { letter, summary } = await generateDisputeLetter(formData);
+      
+      const { letterId } = await saveLetter({
+        formData,
+        letter,
+        summary
       });
 
-      if (!gptResponse.data?.letter || !gptResponse.data?.summary) {
-        throw new Error('Invalid response from AI generator');
-      }
-
-      // Save to database
-      const saveResponse = await fetch('/api/save-letter', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          ...formData,
-          letter: gptResponse.data.letter,
-          summary: gptResponse.data.summary
-        }),
-      });
-
-      if (!saveResponse.ok) {
-        throw new Error('Failed to save letter');
-      }
-
-      const { letterId } = await saveResponse.json();
       navigate(`/output/${letterId}`);
     } catch (error) {
       Sentry.captureException(error);
       console.error('Submission error:', error);
-      alert('Error generating letter. Please try again.');
+      alert(`Error: ${error.message}`);
     } finally {
       setLoading(false);
     }
