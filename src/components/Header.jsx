@@ -22,6 +22,14 @@ export default function Header({ user }) {
           </Link>
           
           <div className="flex items-center space-x-4">
+            {user && (
+              <Link
+                to="/letters"
+                className="text-gray-600 hover:text-blue-600 transition-colors"
+              >
+                My Letters
+              </Link>
+            )}
             {user ? (
               <motion.button
                 whileHover={{ scale: 1.05 }}

@@ -7,6 +7,7 @@ import LandingPage from './pages/LandingPage';
 import LoginPage from './pages/LoginPage';
 import FormPage from './pages/FormPage';
 import OutputPage from './pages/OutputPage';
+import LettersPage from './pages/LettersPage';
 import LoadingSpinner from './components/ui/LoadingSpinner';
 
 export default function App() {
@@ -37,8 +38,12 @@ export default function App() {
               element={user ? <FormPage /> : <Navigate to="/login" replace />}
             />
             <Route
-              path="/output"
+              path="/output/:id"
               element={user ? <OutputPage /> : <Navigate to="/login" replace />}
+            />
+            <Route
+              path="/letters"
+              element={user ? <LettersPage /> : <Navigate to="/login" replace />}
             />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
