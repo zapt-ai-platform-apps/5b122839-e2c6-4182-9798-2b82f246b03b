@@ -41,7 +41,7 @@ export default function LoginPage() {
             }
           }}
           providers={['google']}
-          redirectTo={window.location.origin}
+          redirectTo={`${window.location.origin}/form`}
           magicLink={true}
           onSuccess={() => navigate('/form')}
         />
