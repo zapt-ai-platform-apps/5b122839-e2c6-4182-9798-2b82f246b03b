@@ -2,11 +2,12 @@ import { authenticateUser } from "./_apiUtils.js";
 import { letters } from '../drizzle/schema.js';
 import { drizzle } from 'drizzle-orm/postgres-js';
 import postgres from 'postgres';
+import * as Sentry from '@sentry/node';
 
 export default async function handler(req, res) {
   try {
     const user = await authenticateUser(req);
-    const dbBody = JSON.parse(req.body);
+    const dbBody = req.body; // Remove JSON.parse since Vercel already parses the body
 
     const client = postgres(process.env.COCKROACH_DB_URL);
     const db = drizzle(client);
@@ -26,6 +27,7 @@ export default async function handler(req, res) {
     res.status(200).json({ letterId: newLetter[0].id });
   } catch (error) {
     console.error('Save letter error:', error);
+    Sentry.captureException(error);
     res.status(500).json({ error: 'Failed to save letter' });
   }
 }
