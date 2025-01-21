@@ -1,5 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
+import { ChevronRightIcon } from '@heroicons/react/20/solid';
 
 export default function HeroSection() {
   return (
