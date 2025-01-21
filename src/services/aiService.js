@@ -18,14 +18,14 @@ export async function generateDisputeLetter(formData) {
     response_type: 'json'
   });
 
-  if (!gptResponse?.data || typeof gptResponse.data !== 'object') {
+  if (!gptResponse || typeof gptResponse !== 'object') {
     throw new Error('Invalid AI response structure');
   }
 
-  const { letter, summary } = gptResponse.data;
+  const { letter, summary } = gptResponse;
   
   if (!letter || !summary) {
-    throw new Error(`Missing required fields in AI response. Received: ${JSON.stringify(gptResponse.data)}`);
+    throw new Error(`Missing required fields in AI response. Received: ${JSON.stringify(gptResponse)}`);
   }
 
   return { letter, summary };
