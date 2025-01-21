@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import * as Sentry from '@sentry/react';
+import * as Sentry from '@sentry/browser';
 
 export default function useCopyToClipboard() {
   const [copied, setCopied] = useState(false);
@@ -11,6 +11,7 @@ export default function useCopyToClipboard() {
       setTimeout(() => setCopied(false), 2000);
     } catch (error) {
       Sentry.captureException(error);
+      console.error('Copy failed:', error);
     }
   };
 
