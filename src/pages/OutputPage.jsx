@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import LoadingSpinner from '../components/ui/LoadingSpinner';
 import useCopyToClipboard from '../hooks/useCopyToClipboard';
 import OutputContent from '../components/OutputContent';
+import { supabase } from '../supabaseClient';
 
 export default function OutputPage() {
   const { id } = useParams();
@@ -14,7 +15,14 @@ export default function OutputPage() {
   useEffect(() => {
     const fetchLetter = async () => {
       try {
-        const response = await fetch(`/api/get-letter?id=${id}`);
+        const { data: { session } } = await supabase.auth.getSession();
+        
+        const response = await fetch(`/api/get-letter?id=${id}`, {
+          headers: {
+            'Authorization': `Bearer ${session?.access_token}`
+          }
+        });
+        
         if (!response.ok) throw new Error('Failed to fetch');
         const data = await response.json();
         setLetterData(data);
