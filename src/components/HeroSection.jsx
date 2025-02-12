@@ -16,7 +16,7 @@ export default function HeroSection() {
           <p className="text-xl mb-8">Generate professional dispute letters in minutes using our AI-powered tool</p>
           <button
             onClick={() => document.getElementById('ticket-form').scrollIntoView({ behavior: 'smooth' })}
-            className="bg-white text-blue-600 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors"
+            className="bg-white text-blue-600 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors cursor-pointer"
           >
             Get Started <ChevronRightIcon className="h-5 w-5 inline-block" />
           </button>

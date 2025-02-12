@@ -78,7 +78,7 @@ export default function TicketForm({ user }) {
             <div className="text-center">
               <button
                 type="submit"
-                className="bg-blue-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors disabled:opacity-50"
+                className="bg-blue-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors disabled:opacity-50 cursor-pointer"
                 disabled={!user}
               >
                 {user ? 'Generate Dispute Letter' : 'Sign In to Continue'}

@@ -51,7 +51,7 @@ export default function LoginPage() {
             href="https://www.zapt.ai" 
             target="_blank" 
             rel="noopener noreferrer"
-            className="text-blue-600 hover:text-blue-500"
+            className="text-blue-600 hover:text-blue-500 cursor-pointer"
           >
             Powered by ZAPT AI Platform
           </a>

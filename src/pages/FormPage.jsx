@@ -1,7 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Input } from '../components/ui/Input';
-import LoadingSpinner from '../components/ui/LoadingSpinner';
+import { Input, LoadingSpinner } from '../components/ui';
 import { useFormHandling } from '../hooks/useFormHandling';
 
 export default function FormPage() {
@@ -67,14 +66,10 @@ export default function FormPage() {
             <div className="text-center">
               <button
                 type="submit"
-                className="bg-blue-600 text-white px-8 py-4 rounded-xl font-semibold hover:bg-blue-700 transition-colors w-full md:w-auto disabled:opacity-50"
+                className="bg-blue-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors disabled:opacity-50 w-full md:w-auto cursor-pointer"
                 disabled={loading}
               >
-                {loading ? (
-                  <LoadingSpinner className="h-6 w-6 mx-auto" />
-                ) : (
-                  'Generate Dispute Letter'
-                )}
+                {loading ? <LoadingSpinner className="h-6 w-6 mx-auto" /> : 'Generate Dispute Letter'}
               </button>
             </div>
           </form>

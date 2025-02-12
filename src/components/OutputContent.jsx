@@ -41,7 +41,7 @@ const OutputContent = ({ letterData, copied, handleCopy, navigate }) => (
           </div>
           <button
             onClick={() => navigate('/form')}
-            className="text-gray-600 hover:text-gray-800"
+            className="text-gray-600 hover:text-gray-800 cursor-pointer"
           >
             Edit Details
           </button>

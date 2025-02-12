@@ -54,7 +54,7 @@ export default function FormContent({ formData, setFormData, loading, handleSubm
       <div className="text-center">
         <button
           type="submit"
-          className="bg-blue-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors disabled:opacity-50 w-48"
+          className="bg-blue-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors disabled:opacity-50 w-48 cursor-pointer"
           disabled={loading}
         >
           {loading ? 'Generating...' : 'Continue'}
