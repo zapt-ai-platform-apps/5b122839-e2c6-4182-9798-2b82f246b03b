@@ -27,16 +27,16 @@ export default function useChatClient(user) {
           throw new Error('Failed to connect to support chat service');
         }
 
-       const { token, channelId, userId } = await response.json();
-       const streamClient = StreamChat.getInstance(import.meta.env.VITE_PUBLIC_STREAM_KEY);
-       await streamClient.connectUser(
-         { id: userId, name: userEmail },
-         token
-       );
-       const streamChannel = streamClient.channel('messaging', channelId);
-       await streamChannel.watch();
-       setChatClient(streamClient);
-       setChannel(streamChannel);
+        const { token, channelId, userId } = await response.json();
+        const streamClient = StreamChat.getInstance(import.meta.env.VITE_PUBLIC_STREAM_KEY);
+        await streamClient.connectUser(
+          { id: userId, name: user.email },
+          token
+        );
+        const streamChannel = streamClient.channel('messaging', channelId);
+        await streamChannel.watch();
+        setChatClient(streamClient);
+        setChannel(streamChannel);
       } catch (err) {
         Sentry.captureException(err);
         console.error('Chat initialization error:', err);
