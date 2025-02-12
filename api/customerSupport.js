@@ -25,16 +25,12 @@ export default async function handler(req, res) {
       return res.status(500).json({ error: 'Missing secret key configuration' });
     }
 
-    // Initialize the ZAPT helper (used for support service)
-    const { supabase, createEvent } = initializeZapt(process.env.VITE_PUBLIC_APP_ID);
+    // Initialize the ZAPT helper and get the customerSupport function
+    const { customerSupport } = initializeZapt(process.env.VITE_PUBLIC_APP_ID);
+    // Fetch proper support credentials using customerSupport utility
+    const supportResponse = await customerSupport(email, process.env.ZAPT_SECRET_KEY);
     
-    // Simulate retrieval of support chat credentials using the secret key and email.
-    // In a real-world scenario, this would contact the customer support service.
-    const token = 'support-token-' + email;
-    const channelId = 'support-channel';
-    const userId = email;
-
-    res.status(200).json({ token, channelId, userId });
+    res.status(200).json(supportResponse);
   } catch (error) {
     Sentry.captureException(error);
     console.error('Customer support API error:', error);
