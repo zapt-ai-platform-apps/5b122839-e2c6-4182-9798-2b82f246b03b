@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Chat, Channel, Window, MessageList, MessageInput } from 'stream-chat-react';
-import 'stream-chat-react/dist/css/stream-chat-react.css';
+import 'stream-chat-react/dist/css/index.css';
 import useChatClient from '../hooks/useChatClient';
 
 export default function ChatWidget({ user }) {
