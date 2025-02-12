@@ -47,8 +47,8 @@ export default function useChatClient(user) {
     }
     initChat();
     return () => {
-      if (client) {
-        client.disconnectUser();
+      if (chatClient) {
+        chatClient.disconnectUser();
       }
     };
   }, [user]);
