@@ -9,7 +9,6 @@ export default function useChatClient(user) {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    let client;
     async function initChat() {
       if (!user) {
         setLoading(false);
@@ -27,22 +26,17 @@ export default function useChatClient(user) {
         if (!response.ok) {
           throw new Error('Failed to connect to support chat service');
         }
-        const { token, channelId, userId } = await response.json();
-        
-        // Initialize StreamChat client using the public key
-        client = StreamChat.getInstance(import.meta.env.VITE_PUBLIC_STREAM_KEY);
-        await client.connectUser(
-          { id: userId, email: user.email, name: user.email },
-          token
-        );
-        // Create or retrieve the support channel
-        const chatChannel = client.channel('support', channelId, {
-          name: 'Customer Support Chat',
-          members: [userId]
-        });
-        await chatChannel.watch();
-        setChatClient(client);
-        setChannel(chatChannel);
+
+       const { token, channelId, userId } = await response.json();
+       const streamClient = StreamChat.getInstance(import.meta.env.VITE_PUBLIC_STREAM_KEY);
+       await streamClient.connectUser(
+         { id: userId, name: userEmail },
+         token
+       );
+       const streamChannel = streamClient.channel('messaging', channelId);
+       await streamChannel.watch();
+       setChatClient(streamClient);
+       setChannel(streamChannel);
       } catch (err) {
         Sentry.captureException(err);
         console.error('Chat initialization error:', err);
