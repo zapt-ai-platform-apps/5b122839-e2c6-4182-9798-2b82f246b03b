@@ -27,8 +27,8 @@ export default function useChatClient(user) {
           throw new Error('Failed to connect to support chat service');
         }
 
-        const { token, channelId, userId } = await response.json();
-        const streamClient = StreamChat.getInstance(import.meta.env.VITE_PUBLIC_STREAM_KEY);
+        const { token, channelId, userId, VITE_PUBLIC_STREAM_KEY } = await response.json();
+        const streamClient = StreamChat.getInstance(VITE_PUBLIC_STREAM_KEY);
         await streamClient.connectUser(
           { id: userId, name: user.email },
           token
