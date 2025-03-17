@@ -10,29 +10,84 @@ import OutputPage from './pages/OutputPage';
 import LettersPage from './pages/LettersPage';
 import LoadingSpinner from './components/ui/LoadingSpinner';
 import ChatWidget from './components/ChatWidget';
+import * as Sentry from '@sentry/browser';
 
 export default function App() {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    // Check initial auth state
+    console.log('Checking initial auth state...');
+    
+    const checkSession = async () => {
+      try {
+        const { data, error } = await supabase.auth.getSession();
+        if (error) {
+          console.error('Error checking session:', error);
+          Sentry.captureException(error);
+        } else {
+          console.log('Current session:', data.session ? 'Signed in' : 'No session');
+          setUser(data.session?.user ?? null);
+          
+          // Record login if user is signed in
+          if (data.session?.user?.email) {
+            try {
+              await recordLogin(data.session.user.email, import.meta.env.VITE_PUBLIC_APP_ENV);
+              console.log('User login recorded for:', data.session.user.email);
+            } catch (error) {
+              console.error('Failed to record login:', error);
+              Sentry.captureException(error);
+            }
+          }
+        }
+        setLoading(false);
+      } catch (error) {
+        console.error('Unexpected error checking session:', error);
+        Sentry.captureException(error);
+        setLoading(false);
+      }
+    };
+    
+    checkSession();
+    
+    // Set up auth state change listener
     const { data: authListener } = supabase.auth.onAuthStateChange(async (event, session) => {
-      setUser(session?.user ?? null);
-      setLoading(false);
-      if (session?.user?.email) {
+      console.log('Auth state change event:', event);
+      
+      if (event === 'SIGNED_OUT') {
+        console.log('User signed out successfully');
+        setUser(null);
+      } else if (event === 'SIGNED_IN' && session) {
+        console.log('User signed in:', session.user.email);
+        setUser(session.user);
+        
         try {
           await recordLogin(session.user.email, import.meta.env.VITE_PUBLIC_APP_ENV);
           console.log('User login recorded for:', session.user.email);
         } catch (error) {
           console.error('Failed to record login:', error);
+          Sentry.captureException(error);
         }
+      } else if (event === 'TOKEN_REFRESHED' && session) {
+        console.log('Token refreshed for user:', session.user.email);
+        setUser(session.user);
       }
     });
 
-    return () => authListener?.subscription.unsubscribe();
+    return () => {
+      console.log('Cleanup: unsubscribing from auth listener');
+      authListener?.subscription.unsubscribe();
+    };
   }, []);
 
-  if (loading) return <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white" />;
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white flex items-center justify-center">
+        <LoadingSpinner className="h-12 w-12" />
+      </div>
+    );
+  }
 
   return (
     <Router>
