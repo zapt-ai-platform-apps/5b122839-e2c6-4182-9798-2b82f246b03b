@@ -10,7 +10,9 @@ export default function Header({ user }) {
   const handleSignOut = async () => {
     try {
       console.log('Signing out...');
-      const { error } = await supabase.auth.signOut();
+      const { error } = await supabase.auth.signOut({
+        scope: 'local' // Only clear local session, not all devices
+      });
       if (error) {
         throw error;
       }

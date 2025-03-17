@@ -1,12 +1,36 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Auth } from '@supabase/auth-ui-react';
 import { ThemeSupa } from '@supabase/auth-ui-shared';
 import { supabase } from '../supabaseClient';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
+import * as Sentry from '@sentry/browser';
 
-export default function LoginPage() {
+export default function LoginPage({ user }) {
   const navigate = useNavigate();
+  
+  useEffect(() => {
+    // If user is already logged in, redirect to the form page
+    if (user) {
+      navigate('/form', { replace: true });
+    }
+  }, [user, navigate]);
+
+  const handleAuthSuccess = async () => {
+    try {
+      const { data, error } = await supabase.auth.getSession();
+      if (error) {
+        throw error;
+      }
+      
+      if (data.session) {
+        navigate('/form', { replace: true });
+      }
+    } catch (error) {
+      console.error('Auth success handler error:', error);
+      Sentry.captureException(error);
+    }
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
@@ -43,7 +67,7 @@ export default function LoginPage() {
           providers={['google']}
           redirectTo={`${window.location.origin}/form`}
           magicLink={true}
-          onSuccess={() => navigate('/form')}
+          onSuccess={handleAuthSuccess}
         />
         
         <div className="mt-6 text-center text-sm">

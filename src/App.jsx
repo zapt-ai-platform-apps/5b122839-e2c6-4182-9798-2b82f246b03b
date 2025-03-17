@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { supabase, recordLogin } from './supabaseClient';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Header from './components/Header';
@@ -15,6 +15,8 @@ import * as Sentry from '@sentry/browser';
 export default function App() {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [hasRecordedLogin, setHasRecordedLogin] = useState(false);
+  const initialSessionCheckComplete = useRef(false);
 
   useEffect(() => {
     // Check initial auth state
@@ -26,21 +28,15 @@ export default function App() {
         if (error) {
           console.error('Error checking session:', error);
           Sentry.captureException(error);
-        } else {
-          console.log('Current session:', data.session ? 'Signed in' : 'No session');
-          setUser(data.session?.user ?? null);
-          
-          // Record login if user is signed in
-          if (data.session?.user?.email) {
-            try {
-              await recordLogin(data.session.user.email, import.meta.env.VITE_PUBLIC_APP_ENV);
-              console.log('User login recorded for:', data.session.user.email);
-            } catch (error) {
-              console.error('Failed to record login:', error);
-              Sentry.captureException(error);
-            }
-          }
+          setLoading(false);
+          return;
         }
+        
+        console.log('Current session:', data.session ? 'Signed in' : 'No session');
+        if (data.session?.user) {
+          setUser(data.session.user);
+        }
+        initialSessionCheckComplete.current = true;
         setLoading(false);
       } catch (error) {
         console.error('Unexpected error checking session:', error);
@@ -50,27 +46,43 @@ export default function App() {
     };
     
     checkSession();
-    
-    // Set up auth state change listener
-    const { data: authListener } = supabase.auth.onAuthStateChange(async (event, session) => {
-      console.log('Auth state change event:', event);
-      
-      if (event === 'SIGNED_OUT') {
-        console.log('User signed out successfully');
-        setUser(null);
-      } else if (event === 'SIGNED_IN' && session) {
-        console.log('User signed in:', session.user.email);
-        setUser(session.user);
-        
+  }, []);
+  
+  // Separate useEffect for login recording to avoid race conditions
+  useEffect(() => {
+    if (user?.email && !hasRecordedLogin) {
+      const recordUserLogin = async () => {
         try {
-          await recordLogin(session.user.email, import.meta.env.VITE_PUBLIC_APP_ENV);
-          console.log('User login recorded for:', session.user.email);
+          await recordLogin(user.email, import.meta.env.VITE_PUBLIC_APP_ENV);
+          console.log('User login recorded for:', user.email);
+          setHasRecordedLogin(true);
         } catch (error) {
           console.error('Failed to record login:', error);
           Sentry.captureException(error);
         }
+      };
+      
+      recordUserLogin();
+    }
+  }, [user, hasRecordedLogin]);
+  
+  // Separate useEffect for auth state listener to avoid conflicts
+  useEffect(() => {
+    console.log('Setting up auth state listener...');
+    
+    const { data: authListener } = supabase.auth.onAuthStateChange(async (event, session) => {
+      console.log('Auth state change event:', event);
+      
+      if (event === 'SIGNED_OUT') {
+        console.log('User signed out');
+        setUser(null);
+        setHasRecordedLogin(false);
+      } else if (event === 'SIGNED_IN' && session) {
+        console.log('User signed in:', session.user.email);
+        setUser(session.user);
+        setHasRecordedLogin(false);
       } else if (event === 'TOKEN_REFRESHED' && session) {
-        console.log('Token refreshed for user:', session.user.email);
+        console.log('Token refreshed for user');
         setUser(session.user);
       }
     });
