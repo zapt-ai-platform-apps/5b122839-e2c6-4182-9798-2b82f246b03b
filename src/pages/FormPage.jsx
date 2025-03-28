@@ -1,10 +1,12 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Input, LoadingSpinner } from '../components/ui';
+import { Input } from '../components/ui';
 import { useFormHandling } from '../hooks/useFormHandling';
+import ErrorState from '../components/ui/ErrorState';
+import LoadingSpinner from '../components/ui/LoadingSpinner';
 
 export default function FormPage() {
-  const { formData, setFormData, loading, handleSubmit } = useFormHandling();
+  const { formData, setFormData, loading, error, handleSubmit } = useFormHandling();
 
   return (
     <section className="py-16">
@@ -15,6 +17,9 @@ export default function FormPage() {
           className="bg-white rounded-2xl shadow-sm p-8"
         >
           <h2 className="text-3xl font-bold text-center mb-8">Parking Ticket Details</h2>
+          
+          {error && <ErrorState message={error} />}
+          
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <Input
