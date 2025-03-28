@@ -59,9 +59,12 @@ export default async function handler(req, res) {
       details: {
         vehicleMake: result[0].vehicleMake,
         vehicleModel: result[0].vehicleModel,
+        vehicleReg: result[0].vehicleReg,
         ticketNumber: result[0].ticketNumber,
         ticketDate: result[0].ticketDate,
-        ticketReason: result[0].ticketReason
+        ticketReason: result[0].ticketReason,
+        keeperAddress: result[0].keeperAddress,
+        companyAddress: result[0].companyAddress
       }
     });
   } catch (error) {

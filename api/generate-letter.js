@@ -58,10 +58,22 @@ export default async function handler(req, res) {
             content: `Generate a parking dispute letter using this structured data:
             Vehicle Make: ${formData.vehicleMake}
             Vehicle Model: ${formData.vehicleModel}
+            Vehicle Registration: ${formData.vehicleReg}
             Ticket Number: ${formData.ticketNumber}
             Ticket Date: ${formData.ticketDate}
             Ticket Reason: ${formData.ticketReason}
+            Registered Keeper Address: ${formData.keeperAddress}
+            Parking Company/Authority Address: ${formData.companyAddress}
             Circumstances: ${formData.circumstances}
+            
+            The letter should be formatted as a formal dispute letter, including:
+            1. The current date at the top
+            2. The recipient's address (Parking Company/Authority)
+            3. Your address (Registered Keeper)
+            4. A reference line with ticket number and vehicle registration
+            5. A formal salutation
+            6. Body of the letter explaining the dispute
+            7. A formal closing
             
             Return response as valid JSON with EXACTLY these fields:
             {

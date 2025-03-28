@@ -4,10 +4,21 @@ import { drizzle } from 'drizzle-orm/postgres-js';
 import postgres from 'postgres';
 import * as Sentry from '@sentry/node';
 
+Sentry.init({
+  dsn: process.env.VITE_PUBLIC_SENTRY_DSN,
+  environment: process.env.VITE_PUBLIC_APP_ENV,
+  initialScope: {
+    tags: {
+      type: 'backend',
+      projectId: process.env.VITE_PUBLIC_APP_ID
+    }
+  }
+});
+
 export default async function handler(req, res) {
   try {
     const user = await authenticateUser(req);
-    const dbBody = req.body; // Remove JSON.parse since Vercel already parses the body
+    const dbBody = req.body;
 
     const client = postgres(process.env.COCKROACH_DB_URL);
     const db = drizzle(client);
@@ -16,9 +27,12 @@ export default async function handler(req, res) {
       userId: user.id,
       vehicleMake: dbBody.vehicleMake,
       vehicleModel: dbBody.vehicleModel,
+      vehicleReg: dbBody.vehicleReg,
       ticketNumber: dbBody.ticketNumber,
       ticketDate: dbBody.ticketDate,
       ticketReason: dbBody.ticketReason,
+      keeperAddress: dbBody.keeperAddress,
+      companyAddress: dbBody.companyAddress,
       circumstances: dbBody.circumstances,
       generatedLetter: dbBody.letter,
       keySummary: dbBody.summary

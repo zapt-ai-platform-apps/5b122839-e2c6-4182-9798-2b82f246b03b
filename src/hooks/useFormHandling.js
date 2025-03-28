@@ -8,10 +8,13 @@ export function useFormHandling() {
   const [formData, setFormData] = useState({
     vehicleMake: '',
     vehicleModel: '',
+    vehicleReg: '',
     ticketNumber: '',
     ticketDate: '',
     ticketReason: '',
     circumstances: '',
+    keeperAddress: '',
+    companyAddress: '',
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);

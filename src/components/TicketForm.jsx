@@ -6,9 +6,12 @@ export default function TicketForm({ user }) {
   const [formData, setFormData] = useState({
     vehicleMake: '',
     vehicleModel: '',
+    vehicleReg: '',
     ticketNumber: '',
     ticketDate: '',
     ticketReason: '',
+    keeperAddress: '',
+    companyAddress: '',
     circumstances: ''
   });
 
@@ -44,6 +47,13 @@ export default function TicketForm({ user }) {
               />
 
               <Input
+                label="Vehicle Registration Number"
+                value={formData.vehicleReg}
+                onChange={(e) => setFormData({ ...formData, vehicleReg: e.target.value })}
+                required
+              />
+
+              <Input
                 label="Ticket Number"
                 value={formData.ticketNumber}
                 onChange={(e) => setFormData({ ...formData, ticketNumber: e.target.value })}
@@ -63,6 +73,24 @@ export default function TicketForm({ user }) {
               label="Ticket Reason"
               value={formData.ticketReason}
               onChange={(e) => setFormData({ ...formData, ticketReason: e.target.value })}
+              required
+            />
+
+            <Input
+              label="Your Address (Registered Keeper)"
+              type="textarea"
+              rows="3"
+              value={formData.keeperAddress}
+              onChange={(e) => setFormData({ ...formData, keeperAddress: e.target.value })}
+              required
+            />
+
+            <Input
+              label="Parking Company / Local Authority Address"
+              type="textarea"
+              rows="3"
+              value={formData.companyAddress}
+              onChange={(e) => setFormData({ ...formData, companyAddress: e.target.value })}
               required
             />
 
