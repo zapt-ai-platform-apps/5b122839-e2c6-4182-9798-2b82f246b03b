@@ -1,39 +1,57 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { supabase } from '../supabaseClient';
-import LoadingSpinner from '../components/ui/LoadingSpinner';
+import LoadingState from '../components/ui/LoadingState';
+import ErrorState from '../components/ui/ErrorState';
 import * as Sentry from '@sentry/browser';
 
 export default function LettersPage() {
   const [letters, setLetters] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  const fetchLetters = async () => {
+    try {
+      console.log('Fetching letters...');
+      setLoading(true);
+      setError(null);
+      
+      const { data: { session } } = await supabase.auth.getSession();
+      console.log('Auth session:', session ? 'Session found' : 'No session');
+      
+      if (!session?.access_token) {
+        throw new Error('No valid auth session found');
+      }
+      
+      const response = await fetch('/api/list-letters', {
+        headers: {
+          'Authorization': `Bearer ${session.access_token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+      
+      console.log('API response status:', response.status);
+      
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`HTTP error! status: ${response.status}, ${errorText}`);
+      }
+      
+      const data = await response.json();
+      console.log('Letters fetched:', data.length);
+      setLetters(data);
+    } catch (error) {
+      console.error('Fetch error:', error.message);
+      Sentry.captureException(error);
+      setError(`Error loading letters: ${error.message}`);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const fetchLetters = async () => {
-      try {
-        const { data: { session } } = await supabase.auth.getSession();
-        
-        const response = await fetch('/api/list-letters', {
-          headers: {
-            'Authorization': `Bearer ${session?.access_token}`
-          }
-        });
-        
-        if (!response.ok) throw new Error('Failed to fetch letters');
-        const data = await response.json();
-        setLetters(data);
-      } catch (error) {
-        Sentry.captureException(error);
-        console.error('Fetch error:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchLetters();
   }, []);
-
-  if (loading) return <LoadingSpinner className="h-12 w-12 mx-auto mt-16" />;
 
   return (
     <div className="min-h-screen bg-gray-50 py-16">
@@ -41,9 +59,22 @@ export default function LettersPage() {
         <div className="bg-white rounded-xl shadow-lg p-8">
           <h1 className="text-2xl font-bold mb-8">My Dispute Letters</h1>
           
-          {letters.length === 0 ? (
+          {loading ? (
+            <LoadingState message="Loading your letters..." />
+          ) : error ? (
+            <ErrorState 
+              message={error}
+              onRetry={fetchLetters}
+            />
+          ) : letters.length === 0 ? (
             <div className="text-center py-12 text-gray-500">
-              No saved dispute letters found
+              <p className="mb-4">No saved dispute letters found</p>
+              <Link
+                to="/form"
+                className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors cursor-pointer"
+              >
+                Create Your First Letter
+              </Link>
             </div>
           ) : (
             <div className="space-y-4">
@@ -58,6 +89,9 @@ export default function LettersPage() {
                       <h3 className="font-semibold">{letter.vehicleMake} {letter.vehicleModel}</h3>
                       <p className="text-sm text-gray-500">
                         Ticket #{letter.ticketNumber} - {new Date(letter.ticketDate).toLocaleDateString()}
+                      </p>
+                      <p className="text-xs text-gray-400">
+                        Created: {new Date(letter.createdAt).toLocaleDateString()}
                       </p>
                     </div>
                     <span className="text-blue-600">View →</span>
