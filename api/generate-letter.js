@@ -47,7 +47,7 @@ export default async function handler(req, res) {
         'Authorization': `Bearer ${openAiApiKey}`
       },
       body: JSON.stringify({
-        model: "gpt-4", // or another appropriate model
+        model: "gpt-4o", // or another appropriate model
         messages: [
           {
             role: "system",
