@@ -57,7 +57,15 @@ export default function LettersPage() {
     <div className="min-h-screen bg-gray-50 py-16">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="bg-white rounded-xl shadow-lg p-8">
-          <h1 className="text-2xl font-bold mb-8">My Dispute Letters</h1>
+          <div className="flex justify-between items-center mb-8">
+            <h1 className="text-2xl font-bold">My Dispute Letters</h1>
+            <Link
+              to="/form"
+              className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors cursor-pointer"
+            >
+              Create New Letter
+            </Link>
+          </div>
           
           {loading ? (
             <LoadingState message="Loading your letters..." />
