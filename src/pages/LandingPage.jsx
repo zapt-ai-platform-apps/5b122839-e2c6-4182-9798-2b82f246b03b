@@ -1,7 +1,4 @@
 import React from 'react';
-import { motion } from 'framer-motion';
-import { Link } from 'react-router-dom';
-import { ChevronRightIcon } from '@heroicons/react/20/solid';
 import HeroSection from '../components/HeroSection';
 import HowItWorks from '../components/HowItWorks';
 import Testimonials from '../components/Testimonials';
