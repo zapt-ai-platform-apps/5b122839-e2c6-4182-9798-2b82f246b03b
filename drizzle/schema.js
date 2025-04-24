@@ -18,6 +18,7 @@ export const letters = pgTable('letters', {
   ticketDate: date('ticket_date').notNull(),
   ticketReason: text('ticket_reason').notNull(),
   circumstances: text('circumstances').notNull(),
+  country: text('country'),
   keeperAddress: text('keeper_address'),
   companyAddress: text('company_address'),
   generatedLetter: text('generated_letter').notNull(),

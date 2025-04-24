@@ -39,7 +39,7 @@ export default async function handler(req, res) {
 
     console.log('API: Calling OpenAI API for letter generation');
     
-    // Call OpenAI API
+    // Call OpenAI API with enhanced prompt
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
       headers: {
@@ -51,34 +51,45 @@ export default async function handler(req, res) {
         messages: [
           {
             role: "system",
-            content: "You are a legal expert specializing in parking ticket disputes. Provide responses in JSON format."
+            content: `You are a legal expert specializing in parking ticket disputes. You have deep knowledge of parking regulations, traffic laws, and the legal frameworks governing parking enforcement in ${formData.country || 'various countries'}. Your expertise extends to both public and private parking enforcement, procedural requirements, and common grounds for successful disputes. Provide responses in JSON format.`
           },
           {
             role: "user",
-            content: `Generate a parking dispute letter using this structured data:
+            content: `Generate a comprehensive, professional and extensive parking dispute letter using this structured data:
             Vehicle Make: ${formData.vehicleMake}
             Vehicle Model: ${formData.vehicleModel}
             Vehicle Registration: ${formData.vehicleReg}
             Ticket Number: ${formData.ticketNumber}
             Ticket Date: ${formData.ticketDate}
             Ticket Reason: ${formData.ticketReason}
+            Country: ${formData.country || 'Not specified'}
             Registered Keeper Address: ${formData.keeperAddress}
             Parking Company/Authority Address: ${formData.companyAddress}
             Circumstances: ${formData.circumstances}
             
-            The letter should be formatted as a formal dispute letter, including:
+            The letter should be formatted as a detailed formal dispute letter, including:
             1. The current date at the top
             2. The recipient's address (Parking Company/Authority)
             3. Your address (Registered Keeper)
             4. A reference line with ticket number and vehicle registration
             5. A formal salutation
-            6. Body of the letter explaining the dispute
-            7. A formal closing
+            6. An extensive body covering:
+               - Clear introduction stating the purpose of the letter
+               - Detailed factual account of events
+               - Comprehensive legal and procedural grounds for dispute
+               - Specific references to relevant laws, guidelines or precedents in ${formData.country || 'the relevant jurisdiction'}
+               - Discussion of any procedural errors or technical defects in the ticket issuance
+               - Analysis of any mitigating circumstances
+               - Counter-arguments to anticipated responses
+               - Strong concluding statements
+            7. A formal closing with clear request for the penalty to be cancelled
+            
+            Make this letter extremely comprehensive and professional, drawing on country-specific legal frameworks where possible. The letter should be extensive enough to demonstrate significant value to justify the £4.00 cost. Include appropriate legal terminology and citations relevant to parking enforcement in ${formData.country || 'the appropriate jurisdiction'}.
             
             Return response as valid JSON with EXACTLY these fields:
             {
-              "letter": "Full professional letter text using legal terminology",
-              "summary": "Bullet point summary of key legal arguments"
+              "letter": "Full extensive professional letter text using sophisticated legal terminology and country-specific regulations",
+              "summary": "Detailed bullet point summary of all key legal arguments and procedural points"
             }`
           }
         ],

@@ -60,6 +60,14 @@ export default function FormPage() {
                 onChange={(e) => setFormData({ ...formData, ticketDate: e.target.value })}
                 required
               />
+              
+              <Input
+                label="Country"
+                value={formData.country}
+                onChange={(e) => setFormData({ ...formData, country: e.target.value })}
+                required
+                placeholder="e.g. United Kingdom"
+              />
             </div>
 
             <Input
