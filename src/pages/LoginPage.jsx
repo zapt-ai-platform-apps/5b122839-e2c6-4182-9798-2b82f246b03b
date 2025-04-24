@@ -47,6 +47,12 @@ export default function LoginPage({ user }) {
           </p>
         </div>
         
+        <div className="mb-4 text-center">
+          <p className="text-gray-800">
+            Sign in with ZAPT <a href="https://www.zapt.ai" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:text-blue-500">Learn more</a>
+          </p>
+        </div>
+        
         <Auth
           supabaseClient={supabase}
           appearance={{
@@ -64,9 +70,10 @@ export default function LoginPage({ user }) {
               }
             }
           }}
-          providers={['google']}
+          providers={['google', 'facebook', 'apple']}
           redirectTo={`${window.location.origin}/form`}
           magicLink={true}
+          view="magic_link"
           onSuccess={handleAuthSuccess}
         />
         
