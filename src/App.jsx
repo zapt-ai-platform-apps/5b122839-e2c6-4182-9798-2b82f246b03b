@@ -8,6 +8,7 @@ import LoginPage from './pages/LoginPage';
 import FormPage from './pages/FormPage';
 import OutputPage from './pages/OutputPage';
 import LettersPage from './pages/LettersPage';
+import PaymentSuccessPage from './pages/PaymentSuccessPage';
 import LoadingSpinner from './components/ui/LoadingSpinner';
 import ChatWidget from './components/ChatWidget';
 import * as Sentry from '@sentry/browser';
@@ -110,6 +111,7 @@ export default function App() {
             <Route path="/" element={<LandingPage user={user} />} />
             <Route path="/login" element={<LoginPage user={user} />} />
             <Route path="/form" element={user ? <FormPage /> : <Navigate to="/login" replace />} />
+            <Route path="/payment-success" element={user ? <PaymentSuccessPage /> : <Navigate to="/login" replace />} />
             <Route path="/output/:id" element={user ? <OutputPage /> : <Navigate to="/login" replace />} />
             <Route path="/letters" element={user ? <LettersPage /> : <Navigate to="/login" replace />} />
             <Route path="*" element={<Navigate to="/" replace />} />

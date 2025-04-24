@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { generateDisputeLetter } from '../services/aiService';
-import { saveLetter } from '../services/letterService';
+import { createCheckoutSession } from '../services/paymentService';
 import * as Sentry from '@sentry/browser';
 
 export function useFormHandling() {
@@ -26,27 +25,15 @@ export function useFormHandling() {
     setError(null);
     
     try {
-      console.log("Generating letter for:", formData);
+      console.log("Creating payment session for:", formData);
       
-      // Generate the letter using AI
-      const { letter, summary } = await generateDisputeLetter(formData);
-      console.log("Letter generated successfully");
-      
-      // Save the letter to the database
-      const { letterId } = await saveLetter({ 
-        formData, 
-        letter, 
-        summary 
-      });
-      console.log("Letter saved with ID:", letterId);
-      
-      // Navigate to the output page to view the letter
-      navigate(`/output/${letterId}`);
+      // Create checkout session and redirect to Stripe
+      const { url } = await createCheckoutSession(formData);
+      window.location.href = url;
     } catch (error) {
-      console.error('Letter generation failed:', error);
+      console.error('Payment session creation failed:', error);
       Sentry.captureException(error);
-      setError(error.message || 'Failed to generate letter. Please try again.');
-    } finally {
+      setError(error.message || 'Failed to create payment session. Please try again.');
       setLoading(false);
     }
   };

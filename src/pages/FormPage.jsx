@@ -16,7 +16,10 @@ export default function FormPage() {
           animate={{ opacity: 1, y: 0 }}
           className="bg-white rounded-2xl shadow-sm p-8"
         >
-          <h2 className="text-3xl font-bold text-center mb-8">Parking Ticket Details</h2>
+          <h2 className="text-3xl font-bold text-center mb-2">Parking Ticket Details</h2>
+          <p className="text-center text-gray-600 mb-6">
+            Generate a professional dispute letter for just £4.00
+          </p>
           
           {error && <ErrorState message={error} />}
           
@@ -99,7 +102,7 @@ export default function FormPage() {
                 className="bg-blue-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors disabled:opacity-50 w-full md:w-auto cursor-pointer"
                 disabled={loading}
               >
-                {loading ? <LoadingSpinner className="h-6 w-6 mx-auto" /> : 'Generate Dispute Letter'}
+                {loading ? <LoadingSpinner className="h-6 w-6 mx-auto" /> : 'Continue to Payment • £4.00'}
               </button>
             </div>
           </form>
