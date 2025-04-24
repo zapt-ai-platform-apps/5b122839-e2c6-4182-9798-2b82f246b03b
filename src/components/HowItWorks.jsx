@@ -66,11 +66,27 @@ export default function HowItWorks() {
   };
 
   return (
-    <section className="py-16 bg-gray-50">
+    <section id="how-it-works" className="py-16 relative z-10">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-12">
-          <h2 className="text-3xl font-bold text-gray-900 sm:text-4xl">How It Works</h2>
-          <p className="mt-4 text-xl text-gray-600">Simple steps to dispute your parking ticket</p>
+          <motion.h2 
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            viewport={{ once: true }}
+            className="text-3xl font-bold text-gray-900 sm:text-4xl"
+          >
+            How It Works
+          </motion.h2>
+          <motion.p 
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.1 }}
+            viewport={{ once: true }}
+            className="mt-4 text-xl text-gray-600"
+          >
+            Four simple steps to dispute your parking ticket
+          </motion.p>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -85,10 +101,15 @@ export default function HowItWorks() {
               {steps.map((step) => (
                 <motion.div
                   key={step.id}
-                  className="bg-white rounded-xl shadow-sm p-6 flex flex-col items-center md:items-start text-center md:text-left"
+                  className="bg-white rounded-xl shadow-md p-6 flex flex-col items-center md:items-start text-center md:text-left border border-gray-100 hover:shadow-lg transition-shadow duration-300"
                   variants={itemVariants}
                 >
-                  <div className="bg-blue-50 rounded-full p-3 mb-4">{step.icon}</div>
+                  <div className="bg-blue-50 rounded-full p-3 mb-4 flex items-center justify-center">
+                    <div className="bg-blue-600 text-white rounded-full w-8 h-8 flex items-center justify-center font-semibold -ml-10 -mt-10 text-sm">
+                      {step.id}
+                    </div>
+                    {step.icon}
+                  </div>
                   <h3 className="text-xl font-semibold mb-2">{step.title}</h3>
                   <p className="text-gray-600">{step.description}</p>
                 </motion.div>
