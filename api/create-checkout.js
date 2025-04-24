@@ -1,5 +1,6 @@
 import { authenticateUser } from './_apiUtils.js';
 import * as Sentry from '@sentry/node';
+import Stripe from 'stripe';
 
 Sentry.init({
   dsn: process.env.VITE_PUBLIC_SENTRY_DSN,
@@ -30,7 +31,7 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: 'Form data is required' });
     }
 
-    const stripe = require('stripe')(process.env.STRIPE_API_KEY_CHECKOUTS);
+    const stripe = new Stripe(process.env.STRIPE_API_KEY_CHECKOUTS);
     
     // Create checkout session
     const session = await stripe.checkout.sessions.create({
