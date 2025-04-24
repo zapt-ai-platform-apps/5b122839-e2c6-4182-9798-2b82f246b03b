@@ -92,7 +92,7 @@ export default function HeroSection({ user }) {
             >
               <span className="flex items-center">
                 <span className="h-2 w-2 rounded-full bg-green-400 mr-2 animate-pulse"></span>
-                No win, no fee • Success rate: 73%
+                Success rate: 73%
               </span>
             </motion.div>
 
@@ -148,7 +148,7 @@ export default function HeroSection({ user }) {
               >
                 <a
                   href="#how-it-works"
-                  className="inline-flex items-center justify-center bg-transparent border border-blue-400 text-white px-8 py-4 rounded-xl font-bold text-lg hover:bg-white hover:bg-opacity-10 transition-all duration-300 w-full sm:w-auto"
+                  className="inline-flex items-center justify-center bg-blue-700 hover:bg-blue-800 text-white px-8 py-4 rounded-xl font-bold text-lg transition-all duration-300 w-full sm:w-auto"
                 >
                   See How It Works
                 </a>
@@ -159,23 +159,23 @@ export default function HeroSection({ user }) {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 0.8, delay: 1.2 }}
-              className="text-blue-200 flex flex-col sm:flex-row items-center gap-6 sm:gap-8 justify-center lg:justify-start pt-2"
+              className="flex flex-col sm:flex-row items-center gap-6 sm:gap-8 justify-center lg:justify-start pt-2"
             >
-              <div className="flex items-center">
-                <div className="w-10 h-10 rounded-full bg-blue-800 bg-opacity-50 flex items-center justify-center mr-3 shadow-inner">
+              <div className="flex items-center bg-blue-800/60 px-4 py-2 rounded-lg">
+                <div className="w-10 h-10 rounded-full bg-blue-700 flex items-center justify-center mr-3 shadow-inner">
                   <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                     <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                   </svg>
                 </div>
-                <span className="font-medium">5,000+ tickets disputed</span>
+                <span className="font-medium text-white">5,000+ tickets disputed</span>
               </div>
-              <div className="flex items-center">
-                <div className="w-10 h-10 rounded-full bg-blue-800 bg-opacity-50 flex items-center justify-center mr-3 shadow-inner">
+              <div className="flex items-center bg-blue-800/60 px-4 py-2 rounded-lg">
+                <div className="w-10 h-10 rounded-full bg-blue-700 flex items-center justify-center mr-3 shadow-inner">
                   <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                     <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                   </svg>
                 </div>
-                <span className="font-medium">£325,000+ saved</span>
+                <span className="font-medium text-white">£325,000+ saved</span>
               </div>
             </motion.div>
           </motion.div>
