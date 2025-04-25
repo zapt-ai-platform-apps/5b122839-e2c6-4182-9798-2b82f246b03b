@@ -213,10 +213,7 @@ export default function OutputPage() {
 
         {/* Letter actions in footer */}
         <div className="mt-8 pt-4 border-t border-gray-200">
-          <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
-            <p className="text-gray-600 text-sm">
-              Need to make changes? You can edit your ticket details and regenerate the letter.
-            </p>
+          <div className="flex justify-end">
             <div className="flex gap-3">
               <button
                 onClick={() => navigate('/form')}
