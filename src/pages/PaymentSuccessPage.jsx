@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { generateDisputeLetter } from '../services/aiService';
-import { saveLetter } from '../services/letterService';
+import { supabase } from '../supabaseClient';
 import LoadingState from '../components/ui/LoadingState';
 import ErrorState from '../components/ui/ErrorState';
 import * as Sentry from '@sentry/browser';
@@ -9,52 +8,64 @@ import * as Sentry from '@sentry/browser';
 export default function PaymentSuccessPage() {
   const [searchParams] = useSearchParams();
   const sessionId = searchParams.get('session_id');
-  const formDataString = searchParams.get('form_data');
+  const letterId = searchParams.get('letter_id');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
-    const processPayment = async () => {
-      if (!sessionId || !formDataString) {
-        setError('Missing required payment information');
+    const verifyPayment = async () => {
+      if (!sessionId || !letterId) {
+        setError('Missing payment information');
         setLoading(false);
         return;
       }
 
       try {
-        // Parse the form data
-        const formData = JSON.parse(decodeURIComponent(formDataString));
+        console.log("Verifying payment for letter ID:", letterId);
         
-        console.log("Payment successful, generating letter for:", formData);
+        // Get the current session
+        const { data: { session } } = await supabase.auth.getSession();
+        if (!session?.access_token) {
+          throw new Error("Authentication required");
+        }
         
-        // Generate the letter using AI
-        const { letter, summary } = await generateDisputeLetter(formData);
-        console.log("Letter generated successfully");
-        
-        // Save the letter to the database
-        const { letterId } = await saveLetter({ 
-          formData, 
-          letter, 
-          summary 
+        // Verify payment and update letter
+        const response = await fetch('/api/verify-payment', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${session.access_token}`
+          },
+          body: JSON.stringify({ 
+            sessionId,
+            letterId
+          })
         });
-        console.log("Letter saved with ID:", letterId);
+
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.error || 'Payment verification failed');
+        }
+
+        const data = await response.json();
+        console.log("Payment verified successfully");
         
         // Navigate to the output page to view the letter
-        navigate(`/output/${letterId}`);
+        navigate(`/output/${data.letterId}`);
       } catch (error) {
-        console.error('Letter generation failed after payment:', error);
+        console.error('Payment verification failed:', error);
         Sentry.captureException(error);
-        setError(error.message || 'Failed to generate letter. Please contact support.');
+        setError(error.message || 'Failed to verify payment. Please contact support.');
         setLoading(false);
       }
     };
 
-    processPayment();
-  }, [sessionId, formDataString, navigate]);
+    verifyPayment();
+  }, [sessionId, letterId, navigate]);
 
   if (loading) {
-    return <LoadingState message="Processing your payment and generating your dispute letter..." />;
+    return <LoadingState message="Verifying your payment and generating your dispute letter..." />;
   }
 
   if (error) {

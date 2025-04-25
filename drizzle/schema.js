@@ -21,7 +21,8 @@ export const letters = pgTable('letters', {
   country: text('country'),
   keeperAddress: text('keeper_address'),
   companyAddress: text('company_address'),
-  generatedLetter: text('generated_letter').notNull(),
-  keySummary: text('key_summary').notNull(),
+  generatedLetter: text('generated_letter'),
+  keySummary: text('key_summary'),
+  paymentStatus: text('payment_status').default('pending'),
   createdAt: timestamp('created_at').defaultNow(),
 });

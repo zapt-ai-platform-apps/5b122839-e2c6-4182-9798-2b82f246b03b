@@ -25,15 +25,15 @@ export default async function handler(req, res) {
     const user = await authenticateUser(req);
     console.log(`API: User authenticated: ${user.id}`);
 
-    // Get form data from the request
-    const { formData, currency = 'GBP' } = req.body;
-    if (!formData) {
-      return res.status(400).json({ error: 'Form data is required' });
+    // Get letter ID from the request
+    const { letterId, currency = 'GBP' } = req.body;
+    if (!letterId) {
+      return res.status(400).json({ error: 'Letter ID is required' });
     }
 
     const stripe = new Stripe(process.env.STRIPE_API_KEY_CHECKOUTS);
     
-    // Create checkout session
+    // Create checkout session with letter ID in metadata
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ['card'],
       line_items: [
@@ -45,12 +45,13 @@ export default async function handler(req, res) {
       currency: currency.toLowerCase(),
       mode: 'payment',
       allow_promotion_codes: true,
-      success_url: `${req.headers.origin}/payment-success?session_id={CHECKOUT_SESSION_ID}&form_data=${encodeURIComponent(JSON.stringify(formData))}`,
+      success_url: `${req.headers.origin}/payment-success?session_id={CHECKOUT_SESSION_ID}&letter_id=${letterId}`,
       cancel_url: `${req.headers.origin}/form`,
       metadata: {
         app_id: process.env.VITE_PUBLIC_APP_ID,
         user_id: user.id,
         email: user.email,
+        letter_id: letterId.toString()
       }
     }, {
       stripeAccount: 'acct_1RBjPHB1e4Ppxoh0'

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { createCheckoutSession } from '../services/paymentService';
+import { supabase } from '../supabaseClient';
 import * as Sentry from '@sentry/browser';
 
 export function useFormHandling() {
@@ -26,15 +26,56 @@ export function useFormHandling() {
     setError(null);
     
     try {
-      console.log("Creating payment session for:", formData);
+      console.log("Saving letter data before payment:", formData);
       
-      // Create checkout session and redirect to Stripe
-      const { url } = await createCheckoutSession(formData);
+      // Get the current session
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session?.access_token) {
+        throw new Error("Authentication required");
+      }
+      
+      // Save letter data first
+      const saveResponse = await fetch('/api/save-pending-letter', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${session.access_token}`
+        },
+        body: JSON.stringify(formData)
+      });
+
+      if (!saveResponse.ok) {
+        const errorData = await saveResponse.json();
+        throw new Error(errorData.error || 'Failed to save letter data');
+      }
+
+      const { letterId } = await saveResponse.json();
+      console.log("Letter data saved with ID:", letterId);
+      
+      // Now create checkout session with letter ID
+      const checkoutResponse = await fetch('/api/create-checkout', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${session.access_token}`
+        },
+        body: JSON.stringify({ letterId })
+      });
+
+      if (!checkoutResponse.ok) {
+        const errorData = await checkoutResponse.json();
+        throw new Error(errorData.error || 'Failed to create checkout session');
+      }
+
+      const { url } = await checkoutResponse.json();
+      console.log("Checkout session created, redirecting to payment");
+      
+      // Redirect to Stripe checkout
       window.location.href = url;
     } catch (error) {
-      console.error('Payment session creation failed:', error);
+      console.error('Form submission failed:', error);
       Sentry.captureException(error);
-      setError(error.message || 'Failed to create payment session. Please try again.');
+      setError(error.message || 'Failed to process your request. Please try again.');
       setLoading(false);
     }
   };
