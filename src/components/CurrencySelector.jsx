@@ -12,7 +12,7 @@ const CurrencySelector = ({ selectedCurrency, onChange }) => {
       <label className="block text-sm font-medium text-gray-700 mb-2">
         Select Currency
       </label>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+      <div className="flex flex-col space-y-3">
         {currencies.map((currency) => (
           <div
             key={currency.code}
