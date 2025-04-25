@@ -1,7 +1,7 @@
 import { supabase } from '../supabaseClient';
 import * as Sentry from '@sentry/browser';
 
-export async function createCheckoutSession(formData) {
+export async function createCheckoutSession(formData, currency = 'GBP') {
   try {
     console.log("Creating checkout session");
     
@@ -18,7 +18,10 @@ export async function createCheckoutSession(formData) {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${session.access_token}`
       },
-      body: JSON.stringify({ formData })
+      body: JSON.stringify({ 
+        formData,
+        currency
+      })
     });
 
     if (!response.ok) {

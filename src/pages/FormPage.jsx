@@ -4,9 +4,20 @@ import { Input } from '../components/ui';
 import { useFormHandling } from '../hooks/useFormHandling';
 import ErrorState from '../components/ui/ErrorState';
 import LoadingSpinner from '../components/ui/LoadingSpinner';
+import CurrencySelector from '../components/CurrencySelector';
 
 export default function FormPage() {
   const { formData, setFormData, loading, error, handleSubmit } = useFormHandling();
+
+  // Currency-based price mapping
+  const getPriceDisplay = (currency) => {
+    switch(currency) {
+      case 'EUR': return '€4.50';
+      case 'USD': return '$5.00';
+      case 'GBP':
+      default: return '£4.00';
+    }
+  };
 
   return (
     <section className="py-16">
@@ -18,7 +29,7 @@ export default function FormPage() {
         >
           <h2 className="text-3xl font-bold text-center mb-2">Parking Ticket Details</h2>
           <p className="text-center text-gray-600 mb-6">
-            Generate a professional dispute letter for just £4.00
+            Generate a professional dispute letter for just {getPriceDisplay(formData.currency)}
           </p>
           
           {error && <ErrorState message={error} />}
@@ -104,13 +115,20 @@ export default function FormPage() {
               required
             />
 
+            <div className="mt-4">
+              <CurrencySelector 
+                selectedCurrency={formData.currency}
+                onChange={(currency) => setFormData({ ...formData, currency })}
+              />
+            </div>
+
             <div className="text-center">
               <button
                 type="submit"
                 className="bg-blue-600 text-white px-8 py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors disabled:opacity-50 w-full md:w-auto cursor-pointer"
                 disabled={loading}
               >
-                {loading ? <LoadingSpinner className="h-6 w-6 mx-auto" /> : 'Continue to Payment • £4.00'}
+                {loading ? <LoadingSpinner className="h-6 w-6 mx-auto" /> : `Continue to Payment • ${getPriceDisplay(formData.currency)}`}
               </button>
             </div>
           </form>

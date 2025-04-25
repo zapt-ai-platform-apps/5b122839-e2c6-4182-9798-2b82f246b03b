@@ -15,6 +15,7 @@ export function useFormHandling() {
     keeperAddress: '',
     companyAddress: '',
     country: '',
+    currency: 'GBP', // Default to GBP
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -52,14 +53,17 @@ export function useFormHandling() {
       const { letterId } = await saveResponse.json();
       console.log("Letter data saved with ID:", letterId);
       
-      // Now create checkout session with letter ID
+      // Now create checkout session with letter ID and currency
       const checkoutResponse = await fetch('/api/create-checkout', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${session.access_token}`
         },
-        body: JSON.stringify({ letterId })
+        body: JSON.stringify({ 
+          letterId,
+          currency: formData.currency 
+        })
       });
 
       if (!checkoutResponse.ok) {

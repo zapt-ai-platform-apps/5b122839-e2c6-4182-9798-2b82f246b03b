@@ -4,12 +4,17 @@ import { supabase } from '../supabaseClient';
 import { motion } from 'framer-motion';
 import LoadingState from '../components/ui/LoadingState';
 import ErrorState from '../components/ui/ErrorState';
+import CurrencySelector from '../components/CurrencySelector';
 import * as Sentry from '@sentry/browser';
 
 export default function LettersPage() {
   const [letters, setLetters] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [processingLetterId, setProcessingLetterId] = useState(null);
+  const [showCurrencySelector, setShowCurrencySelector] = useState(false);
+  const [selectedCurrency, setSelectedCurrency] = useState('GBP');
+  const [selectedLetterId, setSelectedLetterId] = useState(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -46,8 +51,14 @@ export default function LettersPage() {
     fetchLetters();
   }, []);
 
-  const handleContinuePayment = async (letterId) => {
-    setLoading(true);
+  const initiatePayment = (letterId) => {
+    setSelectedLetterId(letterId);
+    setShowCurrencySelector(true);
+  };
+
+  const handleContinuePayment = async (letterId, currency) => {
+    setProcessingLetterId(letterId);
+    setShowCurrencySelector(false);
     
     try {
       const { data: { session } } = await supabase.auth.getSession();
@@ -56,14 +67,17 @@ export default function LettersPage() {
         throw new Error('Authentication required');
       }
       
-      // Create checkout session with letter ID
+      // Create checkout session with letter ID and currency
       const response = await fetch('/api/create-checkout', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${session.access_token}`
         },
-        body: JSON.stringify({ letterId })
+        body: JSON.stringify({ 
+          letterId,
+          currency 
+        })
       });
 
       if (!response.ok) {
@@ -77,7 +91,7 @@ export default function LettersPage() {
       console.error('Payment session creation failed:', error);
       Sentry.captureException(error);
       setError(error.message || 'Failed to process payment. Please try again.');
-      setLoading(false);
+      setProcessingLetterId(null);
     }
   };
 
@@ -120,6 +134,36 @@ export default function LettersPage() {
 
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+      {showCurrencySelector && (
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
+        >
+          <div className="bg-white rounded-2xl shadow-lg p-6 w-full max-w-md">
+            <h3 className="text-xl font-bold mb-4">Select Payment Currency</h3>
+            <CurrencySelector 
+              selectedCurrency={selectedCurrency}
+              onChange={setSelectedCurrency}
+            />
+            <div className="flex justify-end space-x-3 mt-6">
+              <button
+                onClick={() => setShowCurrencySelector(false)}
+                className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-100 cursor-pointer"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => handleContinuePayment(selectedLetterId, selectedCurrency)}
+                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 cursor-pointer"
+              >
+                Continue to Payment
+              </button>
+            </div>
+          </div>
+        </motion.div>
+      )}
+
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -187,10 +231,11 @@ export default function LettersPage() {
                       </Link>
                     ) : (
                       <button 
-                        onClick={() => handleContinuePayment(letter.id)}
-                        className="text-blue-600 hover:text-blue-900 cursor-pointer"
+                        onClick={() => initiatePayment(letter.id)}
+                        disabled={processingLetterId === letter.id}
+                        className="text-blue-600 hover:text-blue-900 cursor-pointer disabled:text-gray-400"
                       >
-                        Complete Payment
+                        {processingLetterId === letter.id ? 'Processing...' : 'Complete Payment'}
                       </button>
                     )}
                   </td>
