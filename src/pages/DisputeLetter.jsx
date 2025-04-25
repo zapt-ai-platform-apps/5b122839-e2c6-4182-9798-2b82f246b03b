@@ -33,17 +33,30 @@ export default function DisputeLetter() {
             </div>
           </div>
 
+          {/* Highlighted copy notice */}
+          <div className="bg-blue-50 p-3 rounded-lg mb-6 border-l-4 border-blue-500 flex items-center justify-between">
+            <span className="text-blue-700">Your letter is ready to use! Copy it to send to the parking company.</span>
+            <CopyButton
+              copied={copied}
+              onClick={() => handleCopy(state.letter)}
+            />
+          </div>
+
           <div className="prose max-w-none mb-8">
             <h3 className="text-lg font-semibold mb-4">Key Points:</h3>
             <p className="text-gray-600 mb-8">{state.summary}</p>
             
             <h3 className="text-lg font-semibold mb-4">Full Letter:</h3>
-            <div className="whitespace-pre-wrap border-t pt-4">
+            <div className="whitespace-pre-wrap border-t pt-4 bg-gray-50 p-4 rounded-lg">
               {state.letter}
             </div>
           </div>
 
-          <div className="mt-8 border-t pt-6 flex justify-end gap-4">
+          <div className="mt-8 border-t pt-6 flex justify-between items-center">
+            <CopyButton
+              copied={copied}
+              onClick={() => handleCopy(state.letter)}
+            />
             <DownloadButton letterText={state.letter} />
           </div>
         </motion.div>

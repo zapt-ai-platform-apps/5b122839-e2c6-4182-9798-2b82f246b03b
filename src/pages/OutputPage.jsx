@@ -6,7 +6,9 @@ import useCopyToClipboard from '../hooks/useCopyToClipboard';
 import ReactMarkdown from 'react-markdown';
 import LoadingState from '../components/ui/LoadingState';
 import ErrorState from '../components/ui/ErrorState';
+import CopyLetterButton from '../components/CopyLetterButton';
 import * as Sentry from '@sentry/browser';
+import { DocumentArrowDownIcon } from '@heroicons/react/24/outline';
 
 export default function OutputPage() {
   const { id } = useParams();
@@ -96,6 +98,18 @@ export default function OutputPage() {
     }
   };
 
+  const handleDownload = () => {
+    if (!letter?.generatedLetter) return;
+    
+    const element = document.createElement('a');
+    const file = new Blob([letter.generatedLetter], {type: 'text/plain'});
+    element.href = URL.createObjectURL(file);
+    element.download = `dispute-letter-${letter.ticketNumber}.txt`;
+    document.body.appendChild(element);
+    element.click();
+    document.body.removeChild(element);
+  };
+
   if (loading) {
     return <LoadingState message="Loading your dispute letter..." />;
   }
@@ -176,26 +190,48 @@ export default function OutputPage() {
           </ReactMarkdown>
         </div>
 
+        {/* Letter content with highlighted action buttons */}
         <div className="relative bg-gray-50 p-6 rounded-lg mb-6">
-          <pre className="whitespace-pre-wrap font-sans text-sm leading-relaxed">
+          <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 bg-white border border-gray-200 rounded-lg shadow-md py-2 px-4 flex gap-4 z-10">
+            <CopyLetterButton 
+              copied={copied} 
+              onClick={() => copyToClipboard(letter?.generatedLetter || '')}
+            />
+            <button
+              onClick={handleDownload}
+              className="flex items-center gap-2 px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition-colors cursor-pointer"
+            >
+              <DocumentArrowDownIcon className="h-5 w-5" />
+              <span>Download</span>
+            </button>
+          </div>
+          
+          <pre className="whitespace-pre-wrap font-sans text-sm leading-relaxed pt-8">
             {letter?.generatedLetter || ''}
           </pre>
-          <button
-            onClick={() => copyToClipboard(letter?.generatedLetter || '')}
-            className="absolute top-4 right-4 bg-white p-2 rounded-full shadow-sm hover:shadow-md transition-shadow cursor-pointer"
-            aria-label="Copy letter to clipboard"
-          >
-            {copied ? (
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-green-600" viewBox="0 0 20 20" fill="currentColor">
-                <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-              </svg>
-            ) : (
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-gray-600" viewBox="0 0 20 20" fill="currentColor">
-                <path d="M8 2a1 1 0 000 2h2a1 1 0 100-2H8z" />
-                <path d="M3 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v6h-4.586l1.293-1.293a1 1 0 00-1.414-1.414l-3 3a1 1 0 000 1.414l3 3a1 1 0 001.414-1.414L10.414 13H15v3a2 2 0 01-2 2H5a2 2 0 01-2-2V5zM15 11h2a1 1 0 110 2h-2v-2z" />
-              </svg>
-            )}
-          </button>
+        </div>
+
+        {/* Letter actions in footer */}
+        <div className="mt-8 pt-4 border-t border-gray-200">
+          <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
+            <p className="text-gray-600 text-sm">
+              Need to make changes? You can edit your ticket details and regenerate the letter.
+            </p>
+            <div className="flex gap-3">
+              <button
+                onClick={() => navigate('/form')}
+                className="text-blue-600 hover:text-blue-800 font-medium cursor-pointer"
+              >
+                Create New Letter
+              </button>
+              
+              <CopyLetterButton 
+                copied={copied} 
+                onClick={() => copyToClipboard(letter?.generatedLetter || '')}
+                className="hidden sm:flex" // Hide on mobile, already shown above
+              />
+            </div>
+          </div>
         </div>
 
         <div className="mt-6">

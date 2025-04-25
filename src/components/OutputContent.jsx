@@ -24,9 +24,19 @@ const OutputContent = ({ letterData, copied, handleCopy, navigate }) => (
           </div>
         </div>
 
-        <div className="prose max-w-none mb-8">
+        <div className="prose max-w-none mb-8 relative">
           <h3 className="text-xl font-semibold mb-4">Full Dispute Letter</h3>
-          <pre className="whitespace-pre-wrap font-sans">
+          
+          {/* Highlighted copy notice */}
+          <div className="bg-blue-50 p-3 rounded-lg mb-4 border-l-4 border-blue-500 flex items-center gap-3">
+            <span className="text-blue-700">Your letter is ready to use!</span>
+            <CopyButton
+              copied={copied}
+              onClick={() => handleCopy(letterData.letter)}
+            />
+          </div>
+          
+          <pre className="whitespace-pre-wrap font-sans bg-gray-50 p-4 rounded-lg">
             {letterData.letter}
           </pre>
         </div>
