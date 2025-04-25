@@ -16,7 +16,7 @@ export default function OutputPage() {
   const [paymentRequired, setPaymentRequired] = useState(false);
   const [basicDetails, setBasicDetails] = useState(null);
   const navigate = useNavigate();
-  const { copyToClipboard, copied } = useCopyToClipboard();
+  const [copied, copyToClipboard] = useCopyToClipboard();
 
   useEffect(() => {
     const fetchLetter = async () => {
