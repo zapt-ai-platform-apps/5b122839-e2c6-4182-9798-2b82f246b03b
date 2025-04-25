@@ -26,14 +26,16 @@ const CurrencySelector = ({ selectedCurrency, onChange }) => {
               }
             `}
           >
-            <div className="flex items-center">
-              <span className="text-xl mr-2">{currency.symbol}</span>
+            <div className="flex items-center space-x-3">
+              <div className="flex items-center justify-center w-8 h-8 bg-gray-100 rounded-full">
+                <span className="text-lg font-medium">{currency.symbol}</span>
+              </div>
               <div>
                 <p className="font-medium">{currency.code}</p>
-                <p className="text-sm text-gray-500">{currency.name}</p>
+                <p className="text-xs text-gray-500">{currency.name}</p>
               </div>
             </div>
-            <span className="font-medium">
+            <span className="font-medium text-blue-600">
               {currency.symbol}{currency.price}
             </span>
           </div>
