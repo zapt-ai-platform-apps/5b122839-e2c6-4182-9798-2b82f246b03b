@@ -1,11 +1,14 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { supabase } from '../supabaseClient';
 
 export default function Header({ user }) {
+  const navigate = useNavigate();
+
   const handleSignOut = async () => {
     try {
       await supabase.auth.signOut();
+      navigate('/'); // Navigate to the landing page after signing out
     } catch (error) {
       console.error('Sign out error:', error);
     }
